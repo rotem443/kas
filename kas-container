@@ -212,6 +212,12 @@ while [ $# -gt 0 ]; do
 		shift 1
 		break
 		;;
+	for-all-repos)
+		KAS_REPO_MOUNT_OPT_DEFAULT="ro"
+		KAS_CMD=$1
+		shift 1
+		break
+		;;
 	build)
 		KAS_REPO_MOUNT_OPT_DEFAULT="ro"
 		KAS_CMD=$1
@@ -244,6 +250,11 @@ while [ $# -gt 0 ] && [ $KAS_EXTRA_BITBAKE_ARGS -eq 0 ]; do
 		;;
 	-c|--cmd|--command)
 		KAS_BITBAKE_C_OPTION_ARGS="$2"
+		echo "Im here ${KAS_BITBAKE_C_OPTION_ARGS}"
+		shift 2
+		;;
+	--fc)
+		KAS_BITBAKE_FC_OPTION_ARGS="$2"
 		shift 2
 		;;
 	--)
@@ -383,9 +394,14 @@ set -- "$@" ${KAS_ISAR_ARGS} ${KAS_WITH_LOOP_DEV} ${KAS_RUNTIME_ARGS} \
 if [ -n "${KAS_BITBAKE_C_OPTION_ARGS}" ]; then
 	set -- "$@" -c "${KAS_BITBAKE_C_OPTION_ARGS}"
 fi
+
 # SC2086: Double quote to prevent globbing and word splitting.
 # shellcheck disable=2086
 set -- "$@" ${KAS_FILES}
+
+if [ -n "${KAS_BITBAKE_FC_OPTION_ARGS}" ]; then
+	set -- "$@" "${KAS_BITBAKE_FC_OPTION_ARGS}"
+fi
 
 # rotate any extra bitbake args from the front to the end of the argument list
 while [ $KAS_EXTRA_BITBAKE_ARGS -gt 0 ]; do
